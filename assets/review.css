@@ -1,10 +1,10 @@
 /* Paper-review components (paper-review-blog skill). Works on top of tufte-css + tufted.css. */
 :root {
-  --mk1: #cf3f37; --mk2: #8b5a8f; --mk3: #b9760c; --mk4: #2d6bb3;
+  --mk1: #cf3f37; --mk2: #8b5a8f; --mk3: #b9760c; --mk4: #2d6bb3; --mk5: #2f8f6b;
   --teal: #0b7471; --low: #b8195a; --rv-rule: rgba(128,128,128,.28); --rv-panel: rgba(128,128,128,.07);
 }
 @media (prefers-color-scheme: dark) {
-  :root { --mk1: #ef6d64; --mk2: #b98bbd; --mk3: #e3a443; --mk4: #6aa2e6; --teal: #4fb8b4; --low: #ec5f93; }
+  :root { --mk1: #ef6d64; --mk2: #b98bbd; --mk3: #e3a443; --mk4: #6aa2e6; --mk5: #5fbd98; --teal: #4fb8b4; --low: #ec5f93; }
 }
 
 /* Markers and highlights */
@@ -12,14 +12,17 @@
   font: 700 .75em/1 "JetBrains Mono", monospace; color: #fff; vertical-align: .12em; cursor: default; }
 .mk[data-mk="1"] { background: var(--mk1); } .mk[data-mk="2"] { background: var(--mk2); }
 .mk[data-mk="3"] { background: var(--mk3); } .mk[data-mk="4"] { background: var(--mk4); }
+.mk[data-mk="5"] { background: var(--mk5); }
 .hl { border-radius: 3px; padding: 0 2px; }
 .hl[data-mk="1"] { background: color-mix(in srgb, var(--mk1) 18%, transparent); }
 .hl[data-mk="2"] { background: color-mix(in srgb, var(--mk2) 20%, transparent); }
 .hl[data-mk="3"] { background: color-mix(in srgb, var(--mk3) 22%, transparent); }
 .hl[data-mk="4"] { background: color-mix(in srgb, var(--mk4) 18%, transparent); }
+.hl[data-mk="5"] { background: color-mix(in srgb, var(--mk5) 20%, transparent); }
 .lit { outline: 2px solid currentColor; outline-offset: 1px; }
 .lit[data-mk="1"] { outline-color: var(--mk1); } .lit[data-mk="2"] { outline-color: var(--mk2); }
 .lit[data-mk="3"] { outline-color: var(--mk3); } .lit[data-mk="4"] { outline-color: var(--mk4); }
+.lit[data-mk="5"] { outline-color: var(--mk5); }
 
 /* Callouts (💡 highlights, ✏️ definitions) */
 .callout { display: block; position: relative; width: 55%; padding: .9rem 1.1rem .9rem 2.9rem; margin: 1.6rem 0;
@@ -82,6 +85,7 @@ ol.versions li b { display: block; } ol.versions li span { display: block; opaci
 .cl[data-mk="2"] { background: color-mix(in srgb, var(--mk2) 14%, transparent); box-shadow: inset 3px 0 var(--mk2); }
 .cl[data-mk="3"] { background: color-mix(in srgb, var(--mk3) 16%, transparent); box-shadow: inset 3px 0 var(--mk3); }
 .cl[data-mk="4"] { background: color-mix(in srgb, var(--mk4) 13%, transparent); box-shadow: inset 3px 0 var(--mk4); }
+.cl[data-mk="5"] { background: color-mix(in srgb, var(--mk5) 14%, transparent); box-shadow: inset 3px 0 var(--mk5); }
 .gap { padding: 2px 0 2px 3.3em; font-size: 11px; opacity: .6; }
 .textpanel { padding: 6px 14px; font-size: 1.15rem; line-height: 1.7; }
 .textpanel p { width: auto; margin: .6rem 0; }
