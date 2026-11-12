@@ -7,6 +7,7 @@
 
 == 최근 글
 
+- #link(base + "/posts/2026-11-12-esmc-esmfold2/")[ESMC & ESMFold2 통합 리뷰] (2026-11-12)
 - #link(base + "/posts/2026-11-12-esm2-esmfold/")[ESM-2 & ESMFold 통합 리뷰] (2026-11-12)
 
 #link(base + "/posts/")[모든 글 보기]
