@@ -1,0 +1,12 @@
+/* Eden: fonts and Korean typesetting on top of tufte-css + tufted.css */
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Nanum+Pen+Script&display=swap");
+
+body {
+  font-family: et-book, "Gowun Batang", "AppleMyungjo", "Noto Serif KR", serif;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+code, pre, .code { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
+p, li { line-height: 1.85; }
+.marginnote, .sidenote { line-height: 1.6; }
+h2 { font-style: normal; }
