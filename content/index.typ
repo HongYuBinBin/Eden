@@ -7,6 +7,7 @@
 
 == 최근 글
 
+- #link(base + "/posts/2026-11-13-bonbon/")[Bonbon (Emergent Biological Capabilities in a Foundation Model for Molecular Interactions)] (2026-11-13)
 - #link(base + "/posts/2026-11-12-topk-sae/")[TopK SAE (Scaling and evaluating sparse autoencoders)] (2026-11-12)
 - #link(base + "/posts/2026-11-12-esmc-sae/")[ESMC의 SAE 잠재 공간] (2026-11-12)
 - #link(base + "/posts/2026-11-12-esmc-esmfold2/")[ESMC & ESMFold2 통합 리뷰] (2026-11-12)
