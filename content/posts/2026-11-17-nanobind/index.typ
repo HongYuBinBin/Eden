@@ -38,7 +38,7 @@ _Mechanism-Driven Deep Learning of Nanobody–Antigen Molecular Recognition_
 
 === 1.2 배경: 구조를 보는 쪽과 서열만 보는 쪽
 
-결합 예측에는 크게 두 갈래가 있다. 하나는 구조 기반이다. 복합체 구조를 예측하거나 도킹해서 거기서 접촉면을 읽는다. 정확하지만 느리고 구조를 요구한다. 다른 하나는 서열 기반이다. 단백질 언어 모델로 서열을 임베딩하고 그 위에 분류기를 얹는다. 빠르지만 "왜 붙는가"에 대한 구조적 근거가 약하다.
+결합 예측에는 크게 두 갈래가 있다. 하나는 구조 기반이다. 복합체 구조를 예측하거나 도킹해서 거기서 접촉면을 읽는다. 정확하지만 느리고 구조를 요구한다. 다른 하나는 서열 기반이다. 단백질 언어 모델(이 논문은 ESM-2 \[3\])로 서열을 임베딩하고 그 위에 분류기를 얹는다. 빠르지만 "왜 붙는가"에 대한 구조적 근거가 약하다.
 
 NanoBind는 두 번째 갈래에 서되, 구조 대신 *도메인 지식* 을 아키텍처에 넣겠다고 말한다. 논문이 쓰는 표현이 "mechanism-driven"이고, 구체적으로는 "CDR이 지배하는 결합 양상을 인코더 안에 심었다"는 주장이다. 이 문장이 정확히 무엇을 뜻하는지가 2장의 내용이고, 코드까지 내려가면 꽤 선명해진다.
 
@@ -74,7 +74,7 @@ NanoBind는 두 번째 갈래에 서되, 구조 대신 *도메인 지식* 을 �
   [전역 경로는 RoPE를 끼운 자기 어텐션 한 겹이고, 국소 경로는 작은 커널의 1차원 합성곱 한 겹이다.],
   [원본: Zhao 외 2026, Figure 2B 일부, #link("https://doi.org/10.34133/research.1327")[DOI: 10.34133/research.1327], CC BY 4.0. 마커는 리뷰어가 추가했다.])
 
-#mk(2) 전역 경로는 Q, K에 RoPE를 걸고 ⊛ → Scale → SoftMax → MatMul로 이어지는, 교과서적인 자기 어텐션 한 겹이다. #mk(3) 국소 경로는 임베딩 위를 작은 창이 훑고 지나가는 1차원 합성곱 한 겹이다. 그리고 두 출력은 평균 풀링을 거쳐 이어 붙여진다.
+#mk(2) 전역 경로는 Q, K에 RoPE \[4\]를 걸고 ⊛ → Scale → SoftMax → MatMul로 이어지는, 교과서적인 자기 어텐션 한 겹이다. #mk(3) 국소 경로는 임베딩 위를 작은 창이 훑고 지나가는 1차원 합성곱 한 겹이다. 그리고 두 출력은 평균 풀링을 거쳐 이어 붙여진다.
 
 #wide-fig("fig-2b3", "imgs/fig2b3.png",
   "Figure 2B 아랫부분. 두 경로의 출력이 평균 풀링을 거쳐 이어 붙는다.",
@@ -116,12 +116,12 @@ NanoBind는 두 번째 갈래에 서되, 구조 대신 *도메인 지식* 을 �
 #lead[그래서 세 꼭짓점을 겹쳐 놓으면,]
 
 #wide(table(
-  columns: 5,
-  [마커], [부품], [그림 위치], [본문], [코드 (`6cd5022`)],
-  [#mk(1)], [ESM-2 백본], [Fig 2B 맨 위 상자], [Methods: 마지막 층만 미세조정], [`NanoBind_seq.py` L62, L72–74],
-  [#mk(2)], [Global adaptive module], [Fig 2B 분홍 상자], [RoPE 자기 어텐션], [L42–58 정의, L110 호출],
-  [#mk(3)], [Local adaptive module], [Fig 2B 하늘색 상자], [작은 커널 1D-CNN], [L89 정의, L113 호출],
-  [#mk(4)], [Mean pooling, Concat], [Fig 2B 맨 아래], [서열 특징 생성], [L111, L115, L116],
+  columns: 6,
+  [마커], [부품], [그림 위치], [본문], [코드 (`6cd5022`)], [출처],
+  [#mk(1)], [ESM-2 백본], [Fig 2B 맨 위 상자], [Methods: 마지막 층만 미세조정], [`NanoBind_seq.py` L62, L72–74], [Lin 외 \[3\]에서 가져옴. 동결 정책은 선행 연구 DeepNano \[5\]와 동일],
+  [#mk(2)], [Global adaptive module], [Fig 2B 분홍 상자], [RoPE 자기 어텐션], [L42–58 정의, L110 호출], [어텐션은 표준, 위치 인코딩은 RoPE \[4\]에서 가져옴],
+  [#mk(3)], [Local adaptive module], [Fig 2B 하늘색 상자], [작은 커널 1D-CNN], [L89 정의, L113 호출], [표준 1D-CNN. 커널 5는 이 논문의 선택],
+  [#mk(4)], [Mean pooling, Concat], [Fig 2B 맨 아래], [NEF 생성], [L111, L115, L116], [표준],
 ))
 
 대조해 보면 그림, 본문, 코드가 서로 잘 맞는다. `L72–74`는 `esm2_t6_8M_UR50D`에서 `encoder.layer.5.`가 아닌 모든 파라미터의 `requires_grad`를 끄는 세 줄이고, 이게 본문의 "마지막 층만 미세조정"이다. 백본이 ESM-2 계열 중 *가장 작은 8M* 짜리(6층, 은닉 320)라는 사실은 본문보다 코드에서 더 빨리 읽힌다.
@@ -187,7 +187,7 @@ NanoBind는 두 번째 갈래에 서되, 구조 대신 *도메인 지식* 을 �
 
 #lead[그래서 이 세 패널이 말하는 것은,]
 
-- *F1-score*: NanoBind-seq *0.57*, NanoBind-pro *0.62*. 전용 예측기인 DeepNano-seq 0.16, DeepNano 0.24, NABP-LSTM-Att 0.47. 그리고 D-SCRIPT, Topsy-Turvy, PIPR은 *0.00* 이다.
+- *F1-score*: NanoBind-seq *0.57*, NanoBind-pro *0.62*. 전용 예측기인 DeepNano-seq 0.16, DeepNano \[5\] 0.24, NABP-LSTM-Att 0.47. 그리고 D-SCRIPT, Topsy-Turvy, PIPR은 *0.00* 이다.
 - *AUROC*: NanoBind-seq 0.77(표 값 0.775), NanoBind-pro 0.79. 일반 PPI 모델 셋은 0.55, 0.50, 0.53이다.
 - *AUPRC*: 0.74와 0.77 대 0.37, 0.35, 0.38.
 
@@ -258,7 +258,7 @@ NanoBind는 두 번째 갈래에 서되, 구조 대신 *도메인 지식* 을 �
 
 #crit[🤔 마지막 항목을 한 번 더 보자. 논문이 같은 문단에서 인용하는 *실험값은 4 × 10#super[−11] M* 인데, 이 값은 예측 구간의 하한보다 8배 더 센 값이고 구간 *바깥* 이다. 논문은 이를 "실험값에 가깝다"고 쓴 뒤, 분자 동역학으로 계산한 $K_d$ 3.662 × 10#super[−10] M이 구간 안에 들어온다는 점을 들어 검증했다고 말한다. 초록의 표현도 "분자 동역학 시뮬레이션으로 정량적으로 뒷받침되는 친화도 구간"이라 문자 그대로는 맞다. 다만 자연스럽게 읽으면 친화도 추정이 검증됐다는 뜻으로 읽히는데, 실제로 맞춰 본 상대는 실험이 아니라 시뮬레이션이다.
 
-  그런데 원 출처를 따라가 보면 이야기가 한 겹 더 있다. 7OAY의 출처 논문(Huo 외, _Nat Commun_ 12:5469)은 F2–RBD에 대해 값을 *두 개* 보고한다. 표 1의 SPR 값이 40 pM(= 4 × 10#super[−11] M)이고, 본문의 ITC 직접 결합 값이 *320 ± 30 pM*(= 3.2 × 10#super[−10] M)이다. NanoBind가 인용한 건 앞의 것이고, 뒤의 것은 예측 구간의 하한과 정확히 같은 값이다. ITC 쪽은 저자들이 "F2와 C1은 치환 시약을 구하지 못해 직접 결합으로 추정했고 불확실성이 상당하다"고 적어 둔 값이라 그대로 믿기는 어렵다. 그래도 결론은 바뀐다. *이 사례는 명백한 실패가 아니라, 측정 방법에 따라 참값 자체가 8배 벌어지는 자리다.*
+  그런데 원 출처를 따라가 보면 이야기가 한 겹 더 있다. 7OAY의 출처 논문(Huo 외 \[6\])은 F2–RBD에 대해 값을 *두 개* 보고한다. 표 1의 SPR 값이 40 pM(= 4 × 10#super[−11] M)이고, 본문의 ITC 직접 결합 값이 *320 ± 30 pM*(= 3.2 × 10#super[−10] M)이다. NanoBind가 인용한 건 앞의 것이고, 뒤의 것은 예측 구간의 하한과 정확히 같은 값이다. ITC 쪽은 저자들이 "F2와 C1은 치환 시약을 구하지 못해 직접 결합으로 추정했고 불확실성이 상당하다"고 적어 둔 값이라 그대로 믿기는 어렵다. 그래도 결론은 바뀐다. *이 사례는 명백한 실패가 아니라, 측정 방법에 따라 참값 자체가 8배 벌어지는 자리다.*
 
   3.3의 그림과 겹쳐 놓으면 그래서 더 생각할 거리가 된다. 이 자가 내놓는 구간은 중앙값이 1.28배로 촘촘하다. 그런데 간판 사례의 실험 기준값이 측정 방법에 따라 8배 움직인다면, 1.28배짜리 구간을 맞혔다 틀렸다로 채점하는 일 자체가 어느 정도까지 의미가 있는지 되묻게 된다. 해상도를 올리는 것과 그 해상도를 검증할 수 있는 것은 다른 문제이고, 친화도 데이터가 185개뿐인 분야에서는 후자가 더 어려워 보인다.]
 
@@ -291,10 +291,13 @@ NanoBind는 두 번째 갈래에 서되, 구조 대신 *도메인 지식* 을 �
 
 == References
 
-+ #link("https://doi.org/10.34133/research.1327")[Zhao, S. 외. _NanoBind: Mechanism-Driven Deep Learning of Nanobody–Antigen Molecular Recognition_. Research 9, 1327 (2026)]
+번호는 이 글의 것이다.
+
++ #link("https://doi.org/10.34133/research.1327")[Zhao, S. 외. _NanoBind: Mechanism-Driven Deep Learning of Nanobody–Antigen Molecular Recognition_. Research 9, 1327 (2026), CC BY 4.0] — 이 글이 다루는 논문
 + #link("https://github.com/zhaosq17/NanoBind")[zhaosq17/NanoBind, 커밋 `6cd5022` (2026-02-15)] — 코드 대조 기준
 + #link("https://doi.org/10.1126/science.ade2574")[Lin, Z. 외. _Evolutionary-scale prediction of atomic-level protein structure with a language model_. Science 379, 1123 (2023)] — ESM-2. 이 블로그의 #link(base + "/posts/2026-11-12-esm2-esmfold/")[ESM-2 리뷰]
-+ #link("https://doi.org/10.1038/s41467-021-25480-z")[Huo, J. 외. _A potent SARS-CoV-2 neutralising nanobody shows therapeutic efficacy in the Syrian golden hamster model of COVID-19_. Nat Commun 12, 5469 (2021)] — 7OAY의 출처, F2–RBD 실험 친화도
 + #link("https://doi.org/10.48550/arXiv.2104.09864")[Su, J. 외. _RoFormer: Enhanced Transformer with Rotary Position Embedding_ (2021)] — RoPE
++ #link("https://doi.org/10.1038/s42256-024-00940-5")[Deng, J. 외. _Nanobody–antigen interaction prediction with ensemble deep learning and prompt-based protein language models_. Nature Machine Intelligence (2024)] — 선행 연구 DeepNano. 데이터와 백본 설정의 출처
++ #link("https://doi.org/10.1038/s41467-021-25480-z")[Huo, J. 외. _A potent SARS-CoV-2 neutralising nanobody shows therapeutic efficacy in the Syrian golden hamster model of COVID-19_. Nat Commun 12, 5469 (2021)] — 7OAY의 출처, F2–RBD 실험 친화도
 
 #review-scripts()
