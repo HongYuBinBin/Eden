@@ -113,3 +113,13 @@ article h5 { font-size: 1.25rem; font-weight: 700; margin: 1.6rem 0 .2rem; }
 .rv-thumb > span:first-child { display: block !important; }
 .rv-thumb__cap { display: block; }
 .rv-wide th, .rv-wide tr:first-child td { white-space: nowrap; }
+
+/* Reviewer's aside in the margin */
+.crit-mn { border-left: 3px solid var(--low); padding-left: .7rem; display: block; }
+
+/* Desktop only: tufted.css turns margin notes into inline blocks below 760px,
+   and its own spacing should win there. */
+@media (min-width: 761px) {
+  .rv-fig.fullwidth + .marginnote { margin-top: .4rem; }
+  .marginnote.crit-mn { margin-top: .2rem; }
+}
