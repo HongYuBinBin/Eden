@@ -45,6 +45,19 @@
   #img(src, alt)
 ]
 
+// Free-standing note in the right margin.
+#let mnote(body) = html.span(class: "marginnote", body)
+
+// Reviewer's aside in the right margin (the 🤔 voice, sized for the margin).
+#let crit-note(body) = html.span(class: "marginnote crit-mn", body)
+
+// Wide figure spanning text and margin, with its caption moved into the margin.
+// Place it where the caption should sit; the figure follows underneath.
+#let wide-fig-mn(id, src, alt, take, credit) = {
+  html.elem("figure", attrs: (id: id, class: "rv-fig fullwidth"))[#img(src, alt)]
+  html.span(class: "marginnote")[#strong(take) #credit]
+}
+
 // Wide figure spanning text and margin, caption underneath.
 #let wide-fig(id, src, alt, take, credit) = html.elem("figure", attrs: (id: id, class: "rv-fig fullwidth"))[
   #img(src, alt)
