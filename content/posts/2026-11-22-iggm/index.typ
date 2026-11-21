@@ -18,7 +18,7 @@ _A Generative Model for Functional Antibody and Nanobody Design_
 
 #callout("💡", kind: "highlight", [
   - 항원 구조와 에피토프, 그리고 항체의 뼈대(FR) *서열만* 받아서 CDR 서열과 복합체 구조를 한꺼번에 생성하는 *IgGM*. 기존 co-design 방법들이 요구하던 *FR 구조* 를 입력에서 뺐다.
-  - 확산 모델을 일관성 모델(consistency model)로 증류해, 학습 시 *200* 스텝이던 것을 추론에서 *10* 스텝으로 줄였다.
+  - 확산 모델을 일관성 모델(consistency model)로 증류해 추론을 *10* 스텝에 끝낸다. 코드가 고정해 둔 전체 확산 스텝은 *200* 인데, 이 숫자는 논문 본문에 없다.
   - 항체 60개 테스트셋에서 도킹 성공률 *0.4667*. 템플릿을 쓰는 dyMEAN은 *0.0667* 이다. AlphaFold 3 구조로 초기화하면 *0.6667* 까지 오른다.
   - CDR H3 서열 복원율 *0.360* 으로 dyMEAN의 *0.294* 보다 높고, H3 백본 RMSD는 *2.131 Å* 이다.
   - 삭제 실험이 재미있다. 2단계 학습을 빼면 성공률이 *0.000* 으로 죽고 에피토프를 빼면 DockQ가 *0.246 → 0.069* 로 무너지는데, 초록이 세 핵심 구성요소 중 첫 번째로 꼽은 *사전학습 언어 모델을 빼도 0.433 → 0.426* 밖에 안 내려간다.
@@ -79,11 +79,11 @@ IgGM은 확산 모델을 먼저 학습한 뒤 이 방식으로 증류한다.
 
 === 2.2 ✏️ Sgformer 안에는 무엇이 들어 있나
 
-논문은 Sgformer를 여덟 개 연산의 나열로 설명한다. 코드와 겹쳐 놓으면 하나도 남김없이 일대일로 붙는다.
+논문 본문은 Sgformer의 속을 열지 않는다. §3.1은 16개 블록으로 이뤄져 있다고만 적고, 내부는 Figure 5가 상자 여섯 개로 보여 준다. 그중 둘은 이름 안에 연산을 두 개씩 묶어 뒀다(outgoing *과* incoming edges, starting *과* ending node). 코드에서는 이 여섯 상자가 잔차 갱신 여덟 줄로 펼쳐진다.
 
 #wide-fig-mn("fig-5", "imgs/fig5.png",
   "Sgformer 블록 내부. 서열 어텐션, 전이, 외적 평균, 삼각 갱신, 삼각 자기 어텐션, 쌍 전이",
-  "상자 하나가 `evoformer_ss.py`의 코드 한 줄에 대응한다.",
+  "상자 여섯 개가 `evoformer_ss.py`의 잔차 갱신 여덟 줄로 펼쳐진다.",
   [원본: Wang 외 2025, Figure 5, CC BY 4.0. 줄 번호 메모는 리뷰어가 추가했다. 코드는 #link("https://github.com/TencentAI4S/IgGM")[TencentAI4S/IgGM] `06abc56`\(MIT).])
 
 #wide(code-panel(read(src + "design_model.py"),
@@ -97,9 +97,9 @@ IgGM은 확산 모델을 먼저 학습한 뒤 이 방식으로 증류한다.
 #table(
   columns: 6,
   [*마커*], [*구성요소*], [*그림 위치*], [*본문*], [*코드*], [*출처*],
-  [#mk(1)], [ESM-PPI], [Fig 3 왼쪽 회색 상자], [§3.2 "frozen state"], [`ppi_model.py:L36–40`, `default.py:L34–35`], [ESM-2 \[3\]를 다중 사슬용으로 확장 \[4\]],
-  [#mk(2)], [Sgformer 16블록], [Fig 3 보라 기둥, Fig 5 전체], [§3.2 multi-level feature encoder], [`design_model.py:L31`, `L348`], [AlphaFold2 Evoformer \[6\]를 MSA 축 없이],
-  [#mk(3)], [Predict Module 8블록], [Fig 3 오른쪽 기둥, Fig 6], [§3.2 "8 layers of Predict modules"], [`design_model.py:L32`, `L355`], [AlphaFold2 Structure Module \[6\]],
+  [#mk(1)], [ESM-PPI], [Fig 3 왼쪽 회색 상자], [§3.1 "frozen state"], [`ppi_model.py:L36–40`, `default.py:L34–35`], [ESM-2 \[3\]를 다중 사슬용으로 확장 \[4\]],
+  [#mk(2)], [Sgformer 16블록], [Fig 3 보라 기둥, Fig 5 전체], [§3.1 Sgformer, 16 blocks], [`design_model.py:L31`, `L348`], [AlphaFold2 Evoformer \[6\]를 MSA 축 없이],
+  [#mk(3)], [Predict Module 8블록], [Fig 3 오른쪽 기둥, Fig 6], [§3.1 "8 layers of Predict modules"], [`design_model.py:L32`, `L355`], [AlphaFold2 Structure Module \[6\]],
   [#mk(3)], [서열 헤드], [Fig 6 분홍 상자], [20종 분포 출력], [`design_model.py:L366`], [이 논문],
   [#mk(5)], [기하 보조 헤드 ($L_"geo"$)], [그림에 없음], [부록 D, 네 개 헤드], [`design_model.py:L374–377`], [trRosetta \[11\]],
   [#mk(4)], [확산 스텝 수 $T$], [그림에 없음], [본문에 수치 없음], [`design_model.py:L27`, `base_designer.py:L182`], [코드에만 있음],
@@ -123,11 +123,11 @@ IgGM은 확산 모델을 먼저 학습한 뒤 이 방식으로 증류한다.
 + 갱신된 단일 표현에서 두 갈래가 나온다. *서열 헤드* 는 잔기마다 20종 분포를 내고, *상대 회전·평행이동 예측* 은 프레임을 갱신해 $X_"update"$ 를 만든다.
 + 이 블록을 8번 반복한다.
 
-서열 헤드는 코드에서 `nn.Linear(192, 20)` 한 줄이다(`L366`). 20은 `RESD_NAMES_1C`의 길이이고 같은 파일이 `RESD_NUM := 20`이라고 적어 둔다.
+서열 헤드는 코드에서 `nn.Linear(192, 20)` 한 줄이다(`L366`). 20은 `RESD_NAMES_1C`의 길이다. 그 상수를 정의한 `prot_constants.py`가 바로 아랫줄에 `RESD_NUM = len(RESD_NAMES_1C)`를 두고 주석으로 20이라고 적어 둔다.
 
 === 2.4 200스텝을 10스텝으로
 
-학습은 두 단계다. 1단계는 구조만 복원한다. 손실은 $L_"geo" + L_"Frame" + L_"iFrame" + 0.02 L_"viol"$ 이다. 2단계에서 CDR 서열과 구조를 함께 흐트러뜨리고 둘 다 복원하게 하면서 서열 교차엔트로피 $L_"srcv"$ 를 더한다. 2단계에서 과제를 섞는 비율이 *4:2:2:2* 인데, CDR H3만 설계하는 쪽에 가장 큰 몫을 준다. 중쇄 CDR의 변이가 가장 크기 때문이다.
+학습은 두 단계다. 1단계는 구조만 복원한다. 손실은 $L_"geo" + L_"Frame" + L_"iFrame" + 0.02 L_"viol"$ 이다. 2단계에서 CDR 서열과 구조를 함께 흐트러뜨리고 둘 다 복원하게 하면서 서열 교차엔트로피 $L_"srcv"$ 를 더한다. 2단계에서는 네 가지 과제를 *4:2:2:2* 로 섞는다. CDR H3만 설계, 중쇄 CDR 설계, 여섯 CDR 전체 설계, 그리고 서열은 건드리지 않고 구조만 복원하는 경우다. H3에 가장 큰 몫이 가는 이유로는 중쇄 CDR의 변이가 가장 크다는 점을 든다.
 
 확산 모델이 다 학습되면 일관성 모델로 증류한다 \[5\]. 추론은 기본 *10스텝* 이다.
 
@@ -157,13 +157,13 @@ IgGM은 확산 모델을 먼저 학습한 뒤 이 방식으로 증류한다.
 - 도킹으로 넘어가면 뒤집힌다. IgGM의 DockQ *0.2986*, 성공률 *0.4667* 이고, 템플릿을 쓰는 dyMEAN \[8\]은 *0.1005*, *0.0667* 이다. iRMS는 *6.2195* 대 *8.9227*, LRMS는 *19.4888* 대 *27.4234* 로 전 항목이 앞선다.
 - AlphaFold 3 구조로 초기화한 IgGM(AF3)은 DockQ *0.3630*, 성공률 *0.6667* 이다. 본문 표현으로 "성공률이 20% 올랐다"인데, 0.4667에서 0.6667이니 *20%p* 다.
 
-#crit[🤔 다만 Table 1의 비교는 입력이 같지 않다. 표 범례가 위첨자로 구분해 둔다. †는 항원 구조를 입력으로 쓴다는 뜻, \*는 *에피토프 정보* 를 입력으로 쓴다는 뜻, ‡는 MSA를 쓴다는 뜻이다. IgGM은 †\*이고 dyMEAN도 †\*인데, *AlphaFold 3는 ‡ 하나뿐이다.* 즉 AF3는 어디에 붙는지 모르는 채로 복합체를 예측했고 IgGM은 알고 했다. 그 차이로 DockQ가 *0.2951 대 0.2986*, 0.0035 벌어진 것이다. 에피토프가 얼마나 큰 입력인지는 3.5의 삭제 실험이 보여 준다. 빼면 DockQ가 0.246에서 0.069로 떨어진다. 같은 조건에서도 IgGM이 앞섰을 수는 있지만, 이 표만으로는 알 수 없다.]
+#crit[🤔 다만 Table 1의 비교는 입력이 같지 않다. 표 범례가 위첨자로 구분해 두는데, 글자로 또렷이 읽히는 것은 \*다. *에피토프 정보를 입력으로 쓴다* 는 뜻이다(나머지 둘은 적힌 순서로 보아 †가 항원 구조, ‡가 MSA다). 행별 표기는 IgFold†→HDock, tFold-Ag\*‡, AlphaFold 3‡, dyMEAN†\*, IgGM†\*이다. 즉 *에피토프를 못 받은 것은 AlphaFold 3와 IgFold→HDock 둘뿐* 이다. AF3는 어디에 붙는지 모르는 채로 복합체를 예측했고, 그 상태의 DockQ가 0.2951, 알고 한 IgGM이 0.2986으로 0.0035 차이다. 에피토프가 얼마나 큰 입력인지는 3.5가 보여 준다. 빼면 DockQ가 0.246에서 0.069로 떨어진다. 그러니 이 둘을 나란히 놓고 근소하게 앞섰다고 읽으면 안 된다. 같은 조건끼리 보려면 에피토프를 함께 받은 tFold-Ag와 견줘야 하고, 거기서는 성공률 *0.4068 대 0.4667* 로 IgGM이 분명히 앞선다.]
 
-#crit-note[🤔 성공률 소수점이 묘하다. 60개 기준이면 IgGM 0.4667 = 28/60, dyMEAN 0.0667 = 4/60, IgGM(AF3) 0.6667 = 40/60으로 정확히 떨어진다. 그런데 tFold-Ag의 0.4068은 60 이하 분모 중 *24/59* 에서만, AlphaFold 3의 0.3684는 *21/57* 에서만 네 자리까지 일치한다. 두 전문 예측기만 분모가 작다. 논문은 제외한 표적에 대해 아무 말도 하지 않는다.]
+#crit-note[🤔 성공률 소수점이 묘하다. 60개 기준이면 IgGM 0.4667 = 28/60, dyMEAN 0.0667 = 4/60, IgGM(AF3) 0.6667 = 40/60으로 정확히 떨어진다. 그런데 tFold-Ag의 0.4068은 60 이하 분모 중 *24/59* 에서만 네 자리까지 일치한다. AlphaFold 3의 0.3684는 *7/19* 꼴이라 분모가 19, 38, 57 중 하나인데 어느 쪽도 60이 아니다. 두 전문 예측기만 분모가 다르다. 논문은 제외한 표적에 대해 아무 말도 하지 않는다.]
 
 === 3.2 신규 항체 설계는 얼마나 되나
 
-Table 2는 설계 과제다. DiffAb \[12\]와 MEAN은 IgFold 구조로 초기화한 판과 AlphaFold 3 구조로 초기화한 판을 각각 올렸고, dyMEAN은 템플릿을 쓴다.
+Table 2는 설계 과제다. DiffAb \[12\]와 MEAN \[13\]은 IgFold 구조로 초기화한 판과 AlphaFold 3 구조로 초기화한 판을 각각 올렸고, dyMEAN은 템플릿을 쓴다.
 
 #lead[그래서 Table 2가 말하는 것은,]
 
@@ -178,7 +178,7 @@ Table 2는 설계 과제다. DiffAb \[12\]와 MEAN은 IgFold 구조로 초기화
 
 여기서 한 번 멈춰야 한다. 성공률 0.433은 "설계한 항체의 43%가 붙는다"가 아니다. 두 가지를 겹쳐 읽어야 한다.
 
-첫째, 문턱이 *DockQ > 0.23* 이다. CAPRI 기준으로 acceptable의 하한이다. 실제로 IgGM의 평균 DockQ는 *0.246* 으로 문턱 바로 위에 있다. 절반 가까이가 합격선을 넘되, 넘은 것들도 대체로 합격선 근처라는 뜻이다.
+첫째, 문턱이 *DockQ > 0.23* 이다. CAPRI 기준으로 acceptable의 하한이다. 실제로 표에 실린 IgGM의 DockQ는 *0.246* 으로 문턱 바로 위에 있다. 절반 가까이가 합격선을 넘되, 넘은 것들도 대체로 합격선 근처라는 뜻이다.
 
 둘째, 표본을 여럿 만들었다. 논문은 §4에서 *"AlphaFold 3의 제약 때문에 공정한 비교를 위해 예제당 다섯 개의 표본을 생성한다"* 고 적고, §3.3에서는 *"DockQ 점수를 선별 기준으로 삼았다"* 고 적는다.
 
@@ -193,7 +193,7 @@ Table 3은 같은 실험을 나노바디 27개로 되풀이한 것이다. 나노
 - 구조 예측에서 IgGM은 DockQ *0.2907*, 성공률 *0.4400* 으로 셋 중 가장 높다. tFold-Ag \[4\]가 *0.2881*, *0.4296*, AlphaFold 3가 *0.2867*, *0.3885* 다. 격차가 항체 때보다 훨씬 좁다.
 - 그런데 iRMS와 LRMS는 tFold-Ag가 더 좋다(*6.3490*, *15.0810* 대 IgGM의 *7.9879*, *22.0168*). DockQ만 간발의 차로 앞선 모양새다.
 - 설계에서는 DiffAb(AF3)를 전 항목에서 앞선다. 성공률 *0.415* 대 *0.346*, CDR3 복원율 *0.183* 대 *0.156* 이다.
-- CDR3 복원율 *0.183* 은 항체 H3의 *0.360* 의 절반이다. 논문은 나노바디 CDR이 더 길고 결합 방식이 더 유연해서라고 설명한다.
+- CDR3 복원율 *0.183* 은 항체 H3의 *0.360* 의 절반이다. 논문은 나노바디의 CDR이 더 길어 설계가 까다롭기 때문이라고 설명한다. 결합 방식이 더 유연하다는 설명도 같은 절에 나오지만 그건 다른 문단이고, 서열 복원이 아니라 도킹 지표가 약한 이유로 든 것이다.
 
 === 3.5 무엇이 실제로 기여하나
 
@@ -211,9 +211,15 @@ Table 3은 같은 실험을 나노바디 27개로 되풀이한 것이다. 나노
 
 === 3.6 스텝을 더 쓰면 좋아지나
 
-Table 4는 샘플링 스텝 수를 바꿔 본 것이다. 결과는 스텝 수에 거의 둔감하고, 10스텝에서 성공률 *0.433*, AAR *0.360*, DockQ *0.246* 으로 가장 좋아서 품질과 속도의 균형점으로 골랐다고 적는다.
+Table 4는 샘플링 스텝을 1, 2, 5, 10, 20, 50으로 바꿔 본 것이다. 결과가 스텝 수에 놀랄 만큼 둔감하다.
 
-#wow[🤯 증류가 제대로 됐다는 신호로 읽으면 기분 좋은 결과다. 200스텝짜리 확산 궤적을 10스텝으로 줄였는데 성능이 떨어지지 않았고, 심지어 더 늘려도 나아지지 않는다. 일관성 모델의 목적이 "궤적 어디서든 곧바로 출발점으로"였으니 스텝을 쪼개 봐야 같은 자리에 도착하는 게 자연스럽다. 다만 이 말은 반대로도 읽힌다. 스텝을 늘려 품질을 더 짜낼 여지가 남아 있지 않다는 뜻이기도 하다.]
+#lead[그래서 Table 4가 말하는 것은,]
+
+- 도킹 쪽은 10스텝이 가장 좋다. 성공률 *0.433*, DockQ *0.246* 이다. 1스텝은 *0.383* 과 *0.240*, 50스텝은 *0.383* 과 *0.225* 다.
+- 서열 쪽은 다르다. AAR은 2스텝과 5스텝이 *0.363* 으로 가장 높고, 10스텝의 *0.360* 은 여섯 중 다섯째다. 꼴찌는 50스텝의 *0.348* 이다.
+- 그래서 논문이 10스텝을 고른 근거도 전 항목 최고가 아니라 품질과 속도의 균형이다.
+
+#wow[🤯 증류가 제대로 됐다는 신호다. *1스텝* 에서 이미 AAR 0.362, DockQ 0.240으로 10스텝의 0.360, 0.246과 사실상 같다. 200스텝짜리 확산 궤적을 한 번의 전방 통과로 접어 넣었다는 뜻이고, 일관성 모델의 목적이 "궤적 어디서든 곧바로 출발점으로"였으니 그게 맞다. 10스텝이 벌어 주는 것은 거의 성공률 한 항목(0.383 → 0.433)뿐이다. 다만 이 말은 반대로도 읽힌다. 스텝을 늘려 품질을 더 짜낼 여지가 남아 있지 않고, 20스텝과 50스텝에서는 오히려 뒷걸음질한다.]
 
 == 4. Conclusion
 
@@ -239,7 +245,8 @@ IgGM은 "설계하려는 항체의 구조를 이미 안다"는 비현실적인 �
 + #link("https://doi.org/10.1038/s41586-021-03819-2")[Jumper J 외. _Highly accurate protein structure prediction with AlphaFold._ Nature 596, 583 (2021).]
 + #link("https://doi.org/10.1038/s41586-024-07487-w")[Abramson J 외. _Accurate structure prediction of biomolecular interactions with AlphaFold 3._ Nature 630, 493 (2024).]
 + #link("https://arxiv.org/abs/2302.00203")[Kong X, Huang W, Liu Y. _End-to-End Full-Atom Antibody Design._ ICML 2023. (dyMEAN)]
-+ #link("https://doi.org/10.1093/bioinformatics/btw239")[Basu S, Wallner B. _DockQ: A quality measure for protein-protein docking models._ PLOS ONE 11, e0161879 (2016).]
++ #link("https://doi.org/10.1371/journal.pone.0161879")[Basu S, Wallner B. _DockQ: A quality measure for protein-protein docking models._ PLOS ONE 11, e0161879 (2016).]
 + #link("https://doi.org/10.1038/s41467-023-38063-x")[Ruffolo JA, Chu L-S, Mahajan SP, Gray JJ. _Fast, accurate antibody structure prediction from deep learning on massive set of natural antibodies._ Nature Communications 14, 2389 (2023). (IgFold)]
 + #link("https://doi.org/10.1073/pnas.1914677117")[Yang J 외. _Improved protein structure prediction using predicted interresidue orientations._ PNAS 117, 1496 (2020). (trRosetta)]
 + #link("https://arxiv.org/abs/2210.09171")[Luo S 외. _Antigen-Specific Antibody Design and Optimization with Diffusion-Based Generative Models for Protein Structures._ NeurIPS 2022. (DiffAb)]
++ #link("https://arxiv.org/abs/2208.06073")[Kong X, Huang W, Liu Y. _Conditional Antibody Design as 3D Equivariant Graph Translation._ ICLR 2023. (MEAN)]
