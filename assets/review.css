@@ -77,6 +77,11 @@ ol.versions li b { display: block; } ol.versions li span { display: block; opaci
 .panel { border: 1px solid var(--rv-rule); border-radius: 6px; overflow: hidden; flex: 1; background: var(--rv-panel); }
 .panel__head { display: flex; justify-content: space-between; gap: 8px; padding: 6px 12px; border-bottom: 1px solid var(--rv-rule); font: 12px/1.5 "JetBrains Mono", monospace; opacity: .9; }
 .code { font: 11.5px/1.6 "JetBrains Mono", monospace; padding: 6px 0; }
+
+/* Plain raw blocks keep their own line breaks, so let them scroll rather than
+   widen the page on a narrow screen. Code panels wrap instead (.cl .tx below). */
+pre { overflow-x: auto; max-width: 100%; }
+
 .cl { display: grid; grid-template-columns: 3.3em 1fr 1.7em; align-items: start; }
 .cl .ln { text-align: right; padding-right: 10px; opacity: .5; user-select: none; }
 .cl .tx { white-space: pre-wrap; word-break: break-all; padding-right: 4px; }
