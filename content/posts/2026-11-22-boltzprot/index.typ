@@ -6,10 +6,10 @@
 
 _BoltzProt-1: Towards Efficient De Novo Binder Design with Good Developability_
 
-2026-11-22 작성. Uçar, Bates, Fu, Shi, Stark, Nava, Cavalleri, Wohlwend, Corso, Passaro (Boltz), 2026-06-27 bioRxiv, CC BY 4.0
+2026-11-22 작성. Uçar, Bates, Fu, Shi, Stark, Nava, Cavalleri, Wohlwend, Corso, Passaro (Boltz PBC, Shi는 MIT CSAIL), 2026-06-27 bioRxiv, CC BY 4.0
 
 #callout("✏️", [
-  _이 글은 내가 논문을 제대로 이해하려고 쓴 요약이라 틀린 곳이 있을 수 있다. 피드백은 언제든 환영한다._ 읽은 것은 #link("https://boltz.com/boltzprot1-technical-report.pdf")[boltz.com의 기술 리포트 PDF] \(27쪽, 2026-06-16 생성)이고, 같은 내용이 #link("https://doi.org/10.64898/2026.06.23.733997")[bioRxiv 10.64898/2026.06.23.733997]에 *CC BY 4.0* 으로 올라와 있어 원본 그림에 직접 주석을 달았다. *BoltzProt-1과 BoltzPPI는 가중치도 코드도 비공개다.* 대신 토대가 되는 #link("https://github.com/jwohlwend/boltz")[Boltz-2]\(`b1ebfc4`, MIT)와 BoltzGen은 열려 있어서, 그쪽 코드로 짚을 수 있는 데까지만 짚었다.
+  _이 글은 내가 논문을 제대로 이해하려고 쓴 요약이라 틀린 곳이 있을 수 있다. 피드백은 언제든 환영한다._ 읽은 것은 #link("https://boltz.com/boltzprot1-technical-report.pdf")[boltz.com의 기술 리포트 PDF] \(27쪽, 2026-06-16 생성)이고, 같은 내용이 #link("https://doi.org/10.64898/2026.06.23.733997")[bioRxiv 10.64898/2026.06.23.733997]에 *CC BY 4.0* 으로 올라와 있어 원본 그림에 직접 주석을 달았다. *BoltzProt-1과 BoltzPPI는 공개된 가중치도 코드도 없다.* 리포트가 밝히는 접근 경로는 Boltz API와 Boltz Lab 플랫폼뿐이다. 대신 토대가 되는 #link("https://github.com/jwohlwend/boltz")[Boltz-2]\(`b1ebfc4`, MIT)와 BoltzGen은 열려 있어서, 그쪽 코드로 짚을 수 있는 데까지만 짚었다.
 ])
 
 == 💡 Highlights
@@ -34,7 +34,7 @@ de novo 결합체 설계는 RFdiffusion \[6\] 이후 지난 몇 해 사이 "되�
 
 === 1.2 배경: 리간드에서 단백질로
 
-이 논문의 착상은 자기네 전작에서 왔다. Boltz-2 \[2\]는 단백질-리간드 *친화도* 를 구조 예측 트렁크 위에 헤드를 하나 더 달아 예측한다. BoltzPPI는 같은 구조를 단백질-단백질로 옮긴 것이다.
+이 논문의 착상은 자기네 전작에서 왔다. Boltz-2 \[9\]는 단백질-리간드 *친화도* 를 구조 예측 트렁크 위에 헤드를 하나 더 달아 예측한다. BoltzPPI는 같은 구조를 단백질-단백질로 옮긴 것이다.
 
 대비해서 보면 차이가 분명하다. 구조 예측 신뢰도는 *내 예측이 얼마나 미더운가* 를 묻는다. 모델이 헷갈리면 낮게 나오고, 확신하면 높게 나온다. 반면 결합 예측 헤드는 *이 둘이 붙는가* 를 묻는다. 라벨이 다르다. 전자는 모델 자신에 대한 메타 판단이고, 후자는 세상에 대한 판단이다.
 
@@ -47,7 +47,7 @@ de novo 결합체 설계는 RFdiffusion \[6\] 이후 지난 몇 해 사이 "되�
   - *결합*: 저유사도 표적 10개(선별 효과만 분리) + Chai-2 표적 10개(파이프라인 전체 비교)
   - *개발성*: 열안정성, 응집, 단량체 순도, 소수성, 비특이 결합, 자가회합
 - 판정 기준을 스스로 조인다. 스크리닝 히트와 확정 결합체를 나누고, 기존 문헌이 전자를 결합체로 보고해 왔다고 지적한다
-- 모델은 API와 플랫폼으로만 제공한다. 가중치·코드 비공개
+- 모델 접근은 Boltz API와 Boltz Lab 플랫폼으로만 열어 둔다. 가중치나 코드를 받을 경로는 리포트에 없다
 
 == 2. Method
 
@@ -59,7 +59,7 @@ de novo 결합체 설계는 RFdiffusion \[6\] 이후 지난 몇 해 사이 "되�
 
 === 2.2 BoltzPPI 안에는 무엇이 들어 있나
 
-리포트 27쪽 어디에도 *BoltzPPI의 구조도가 없다.* 그림 일곱 개가 전부 결과 그림이다. 그래서 §2.2의 서술을 내가 그려 봤다. 공개 코드로 확인되는 부분과 서술만 있는 부분을 색으로 갈랐다.
+리포트 27쪽 어디에도 *BoltzPPI의 구조도가 없다.* 그림이 27개인데 본문에 있는 여섯 개는 전부 결과 그림이고, Figure 7은 부록의 열안정성, 나머지 Figure 8–27은 결합체별 센서그램이다. 그래서 §2.2의 서술을 내가 그려 봤다. 공개 코드로 확인되는 부분과 서술만 있는 부분을 색으로 갈랐다.
 
 #wide-fig-mn("fig-arch", "imgs/boltzppi.png",
   "BoltzPPI 구조를 리포트 §2.2 서술과 Boltz-2 공개 코드로 재구성한 그림",
@@ -73,11 +73,11 @@ de novo 결합체 설계는 RFdiffusion \[6\] 이후 지난 몇 해 사이 "되�
 - #mk(3) *헤드 둘*. PPI 헤드는 로짓을 내고 시그모이드를 거쳐 확률이 되며 focal loss로 학습한다. confidence 헤드는 pLDDT·PDE·PAE를 낸다. 둘은 같이 학습되고, *결합 손실은 보조 신호* 다.
 - #mk(4) 추론에서는 사슬 간 쌍 특징 평균과 전체 토큰 평균을 이어 붙여 MLP에 넣고 시그모이드로 점수를 낸다.
 
-#crit-note[🤔 리포트가 BoltzPPI의 하이퍼파라미터로 내놓는 숫자는 셋뿐인데(4블록, 16헤드, 0.25), 이 중 *둘은 Boltz-2의 기본값 그대로* 다. `confidence.yaml` L109–112가 `num_heads: 16`, `dropout: 0.25`다. 실제로 BoltzPPI가 고른 건 깊이 4 하나다.]
+#crit-note[🤔 리포트가 주는 하이퍼파라미터는 셋뿐이다(4블록, 16헤드, 0.25). 이 중 *드롭아웃 0.25는 Pairformer 두 클래스 모두의 코드 기본값* 이다. 16헤드는 `PairformerModule`의 기본값인데(`pairformer.py:L124`), 친화도 모듈이 쓰는 쪽은 서열 트랙이 없는 `PairformerNoSeqModule`이라 `num_heads` 인자 자체가 없다(`L272–284`, 대신 `pairwise_num_heads=4`). 리포트가 BoltzPPI의 스택이 "단일과 쌍 표현을 함께" 다듬는다고 적은 걸 보면, 친화도 모듈보다 *confidence 모듈 쪽 스택* 에 가깝다는 뜻이다.]
 
 === 2.3 어디까지 코드로 확인되나
 
-BoltzPPI는 비공개다. 그런데 리포트가 "Boltz-2의 단백질-리간드 친화도 예측 통찰을 단백질 결합체 점수로 옮겼다"고 적은 덕에, *옮겨 온 원본* 은 열려 있다. Boltz-2의 `AffinityModule`이 그것이다.
+BoltzPPI는 비공개다. 그런데 리포트가 "Boltz-2의 단백질-리간드 친화도 예측 통찰을 단백질 결합체 점수로 옮겼다"고 적은 덕에, *옮겨 온 원본* 은 열려 있다. 저장소 \[2\]의 `AffinityModule`이 그것이다.
 
 #wide(code-panel(read("code/affinity.py"),
   ((34, 34), (43, 44), (49, 51), (54, 55), (66, 67), (142, 142), (161, 176)),
@@ -90,15 +90,19 @@ BoltzPPI는 비공개다. 그런데 리포트가 "Boltz-2의 단백질-리간드
 #table(
   columns: 6,
   [*마커*], [*구성요소*], [*그림 위치*], [*리포트 본문*], [*Boltz-2 코드*], [*출처*],
-  [#mk(1)], [쌍 입력 구성], [내 그림 두 번째 상자], [§2.2 "projected single-token features expanded into pair space"], [`affinity.py:L54–55`, `L49–51`], [Boltz-2 \[2\]에 이미 있음],
-  [#mk(1)], [거리 이산화], [같은 상자], [§2.2 "discretized distance embeddings"], [`affinity.py:L43–44` (64 bins, 22 Å)], [Boltz-2 기본값],
-  [#mk(2)], [Pairformer 4블록], [세 번째 상자], [§2.2 "4 blocks, 16 heads, dropout 0.25"], [`affinity.py:L66`; `confidence.yaml:L109–112`], [깊이만 이 논문, 나머지는 Boltz-2],
+  [#mk(1)], [쌍 입력 구성], [내 그림 두 번째 상자], [§2.2 "projected single-token features expanded into pair space"], [`affinity.py:L54–55`], [Boltz-2 \[9\]에 이미 있음],
+  [#mk(1)], [거리 이산화], [같은 상자], [§2.2 "discretized distance embeddings"], [`affinity.py:L43–44`, `L49–51` (64 bins, 22 Å)], [Boltz-2 기본값],
+  [#mk(2)], [Pairformer 4블록], [세 번째 상자], [§2.2 4블록·16헤드·드롭아웃 0.25], [`affinity.py:L66`; `pairformer.py:L116–126`, `L272–284`], [드롭아웃만 코드 기본값],
   [#mk(3)], [이진 결합 로짓], [PPI 헤드], [§2.2 "mapped to a probability p = σ(ŷ)"], [`affinity.py:L176` `to_affinity_logits_binary`], [Boltz-2에 리간드용으로 이미 있음],
-  [#mk(3)], [confidence 헤드], [아래 헤드], [§2.2 pLDDT·PDE·PAE], [`confidencev2.py:L234`, `L264`], [Boltz-2 \[2\]],
-  [#mk(4)], [풀링 후 점수], [마지막 상자], [§2.2 inference], [`affinity.py:L161–176`], [Boltz-2 구조 그대로],
+  [#mk(3)], [confidence 헤드], [아래 헤드], [§2.2 pLDDT·PDE·PAE], [`confidencev2.py:L234`, `L264`], [Boltz-2 \[9\]],
+  [#mk(4)], [풀링 후 점수], [마지막 상자], [§2.2 inference], [헤드 `affinity.py:L161–176`, 풀링 `L197–212`], [풀링 방식은 서로 다름],
 )
 
-대조해 보면 BoltzPPI는 *새 모델이라기보다 Boltz-2의 친화도 모듈을 단백질-단백질로 겨눈 것* 에 가깝다. 쌍 공간 투영, 64칸 22 Å 거리 임베딩, Pairformer 스택, 그리고 마지막의 이진 로짓까지 `affinity.py`에 이미 다 있다. 진짜 새것은 결합체/표적 마스크 임베딩, 최소 토큰간 거리 행렬, 50%씩 두 체제로 도는 multi-view 학습, focal loss, 그리고 단백질-단백질 학습 데이터다. 이게 폄하는 아니다. 오히려 "리간드에서 통한 구조가 단백질에서도 통한다"가 이 논문의 주장이고, 코드를 보면 그 주장이 문자 그대로임을 알 수 있다.
+대조해 보면 BoltzPPI의 뼈대는 *Boltz-2의 친화도 모듈을 단백질-단백질로 겨눈 것* 에 가깝다. 쌍 공간 투영, 64칸 22 Å 거리 임베딩, Pairformer 스택, 그리고 마지막의 이진 로짓까지 `affinity.py`에 이미 있다.
+
+다만 "그대로 옮겼다"고 하면 과하다. 코드를 끝까지 따라가면 세 군데가 다르다. 첫째, Boltz-2의 이진 로짓은 `nn.Linear(1, 1)`로, 회귀 출력 스칼라 하나를 다시 재는 한 줄짜리 보정이다(`L176`, `L216`). BoltzPPI 쪽은 풀링된 표현 위의 MLP를 focal loss로 학습한다. 둘째, 풀링이 다르다. Boltz-2는 쌍 특징만 평균하고 그 마스크에 *리간드 내부 쌍까지 포함* 한다(`L197–212`). BoltzPPI는 사슬 간 쌍 평균과 전체 토큰 평균을 따로 내서 layer norm을 거쳐 이어 붙인다. 셋째, 친화도 모듈의 스택은 서열 트랙이 없는데 BoltzPPI는 단일 표현도 함께 다듬는다.
+
+그러니 새것 쪽에는 결합체/표적 마스크 임베딩, 최소 토큰간 거리 행렬, 단일 표현까지 다루는 스택, 단일+쌍 풀링과 layer norm, 50%씩 두 체제로 도는 multi-view 학습, 표현 차원에 Gaussian 잡음을 더하는 정규화, focal loss, 그리고 단백질-단백질 학습 데이터가 들어간다. 적지 않다. 그래도 "리간드에서 통한 구조가 단백질에서도 통한다"는 이 논문의 주장이 코드 수준에서 뼈대만큼은 문자 그대로임은 확인된다.
 
 #crit[🤔 코드로도 리포트로도 끝내 알 수 없는 것이 하나 있다. *음성 라벨을 어떻게 만들었는가.* §2.2는 학습 데이터가 PDB \[8\]와 특허 유래 복합체(양성) 그리고 "synthetically generated protein-protein pairs"(음성)로 이뤄진다고 적고, 어떻게 합성했는지는 한 줄도 없다. 이게 중요한 이유는 음성의 난이도가 과제의 난이도를 정하기 때문이다. 무작위로 짝지은 단백질 쌍이 음성이라면 모델이 배우는 건 "이 둘이 짝으로 그럴듯한가"에 가깝다. 그런데 배치될 때 BoltzPPI가 푸는 문제는 "*같은 표적에 대해 생성된 수만 개 후보 중* 어느 것이 붙는가"다. 후자가 훨씬 어렵고, 전자를 잘한다고 후자를 잘한다는 보장이 없다. 결과가 좋으니 뭔가는 전이된 것인데, 무엇이 전이됐는지는 이 리포트로 답할 수 없다.]
 
@@ -121,7 +125,7 @@ BoltzPPI는 비공개다. 그런데 리포트가 "Boltz-2의 단백질-리간드
 - 표적 기준으로는 3/10 대 2/10이다. AMBP가 늘었다.
 - 스크리닝 히트는 BoltzProt-1 24개, BoltzGen 15개인데, *Adaptyv가 집계 프로토콜을 개정하면서 각각 14개와 7개로 줄었다.* 표의 히트율 9.3%와 4.7%는 개정값 기준이다.
 
-#wow[🤯 BoltzPPI가 *BoltzGen이 이미 고른 서열을 제외하고* 골랐다는 조건이 눈에 띈다. 보통은 랭커 둘을 같은 풀에 풀어 놓고 상위 N을 비교한다. 여기서는 BoltzPPI가 자기 상위권 중 BoltzGen과 겹치는 것을 빼고 그 아래에서 채워야 했다. 즉 핸디캡을 지고 이긴 셈이다. 비교를 자기에게 불리하게 설계해 놓고 결과를 보고하는 건 드문 일이라 적어 둔다.]
+#wow[🤯 BoltzPPI가 *BoltzGen이 이미 고른 서열을 제외하고* 골랐다는 조건이 눈에 띈다. 보통은 랭커 둘을 같은 풀에 풀어 놓고 상위 N끼리 비교한다. 여기서는 BoltzPPI가 자기 상위권 중 BoltzGen과 겹치는 것을 빼고 그 아래에서 채워야 했다. 다만 이게 얼마나 불리했는지는 알 수 없다. 리포트가 겹친 개수를 주지 않고, 애초에 이 논문의 주장이 "BoltzPPI의 신호는 구조 신뢰도와 다르다"는 것이라면 겹침이 적어 손해도 작았을 수 있다. 이미 시험한 분자를 다시 시험하지 않으려는 실용적 이유도 있다. 그래도 두 집합이 서로 겹치지 않는 덕에 12 대 5가 *서로 다른 분자끼리의 비교* 가 된 것은 분명하다.]
 
 #crit[🤔 그런데 본문 문장과 표가 맞지 않는다. §3.2는 "BoltzPPI는 스크리닝 히트 24개(16.0%)와 확정 결합체 12개(8.0%)를 회수했고, 이는 BoltzGen의 스크리닝 히트 *14개(9.3%)*, 확정 결합체 5개(3.3%)와 비교된다"고 쓴다. 그런데 Table 1에서 *14와 9.3%는 BoltzProt-1 자신의 개정값* 이다. BoltzGen 쪽은 최초 15개(10.0%), 개정 7개(4.7%)다. 150으로 나눠 보면 바로 나온다. 24/150 = 16.0%, 14/150 = 9.3%, 15/150 = 10.0%, 7/150 = 4.7%. 즉 이 문장은 *자기 개정 전 수치를 자기 개정 후 수치와 맞세우고 뒤쪽에 BoltzGen 이름을 붙였다.* 같은 기준끼리 비교하면 개정값 14 대 7로 *2.0배*, 개정 전이면 24 대 15로 1.6배다. 확정 결합체의 2.4배는 맞다.]
 
@@ -130,29 +134,29 @@ BoltzPPI는 비공개다. 그런데 리포트가 "Boltz-2의 단백질-리간드
   "본문이 비교한 두 숫자는 같은 행에서 왔다.",
   [리뷰어가 그림. 출처: Uçar 외 2026 Table 1, CC BY 4.0.])
 
-덧붙이자면 프로토콜 개정이 양쪽 히트를 반토막 냈는데(15→7, 24→14), 무엇이 어떻게 바뀌었는지는 표 각주 한 줄이 전부다. 히트율이 헤드라인 수치인 논문에서 이건 본문에 들어갈 내용이다.
+덧붙이자면 프로토콜 개정이 양쪽 히트를 크게 깎았는데(15→7로 53%, 24→14로 42% 감소), 무엇이 어떻게 바뀌었는지는 표 각주 한 줄이 전부다. 히트율이 헤드라인 수치인 논문에서 이건 본문에 들어갈 내용이다.
 
 === 3.2 그 12개는 어디서 나왔나
 
-리포트의 Figure 1a는 표적별 막대를 보여 주는데, 여기에 적히지 않은 것이 둘 있다.
+리포트의 Figure 1a가 표적별 막대를 보여 주고, 부록 D.1의 Table 4는 결합체를 ID로 하나하나 열거한다. 둘을 합치면 분포가 나오는데, 본문에는 그 분포가 없다.
 
 #wide-fig-mn("fig-1", "imgs/fig1.png",
   "저유사도 표적에서의 표적별 히트율. 리포트 Figure 1a",
   "신호가 난 다섯 표적만 그려져 있고, 확정 결합체는 사실상 두 표적에 몰려 있다.",
   [원본: Uçar 외 2026, Figure 1a, #link("https://doi.org/10.64898/2026.06.23.733997")[bioRxiv], CC BY 4.0. 주석은 리뷰어가 추가했다.])
 
-막대 높이를 픽셀로 재서 15로 환산하면 확정 결합체가 정확히 Table 1과 맞는다. BoltzProt-1은 AMBP 1, IDI2 4, PMVK 7로 합계 12. BoltzGen은 IDI2 1, PMVK 4로 합계 5. 그래서 그림과 표는 일치한다. 문제는 *분포* 다.
+부록 Table 4의 ID를 세면 `AMBP_1`, `IDI2_1`–`IDI2_4`, `MZB1_1`, `PMVK_1`–`PMVK_7`로 *13개* 다. 이 중 `MZB1_1`은 3.3에서 볼 개선된 생성 모델 쪽 결합체라 150개 고정 풀 비교에는 안 들어가고, 나머지 12개가 Table 1의 12다. Figure 1a의 막대 높이를 픽셀로 재서 15로 환산해도 같은 값이 나온다(BoltzGen은 IDI2 1, PMVK 4로 합계 5). 그림과 표와 부록이 결합체 수에서는 맞는다. 문제는 *분포* 다.
 
 #wide-fig-mn("fig-conc", "imgs/concentration.png",
   "표적 10개 전체에 대한 확정 결합체 수",
   "8.0%라는 수치가 어디서 왔는지는 표적별로 펼쳐 봐야 보인다.",
-  [리뷰어가 그림. 출처: Uçar 외 2026 Figure 1a에서 막대값을 읽어 15개 기준으로 환산, CC BY 4.0.])
+  [리뷰어가 그림. 출처: Uçar 외 2026 부록 D.1 Table 4의 결합체 ID와 Figure 1a 막대값, CC BY 4.0. 고정 풀 비교 기준이라 `MZB1_1`은 빠져 있다.])
 
 #lead[그래서 펼쳐 놓으면,]
 
 - 확정 결합체 12개 중 *7개가 PMVK 하나* 에서 나왔다. 58%다.
 - *11개가 두 표적(IDI2, PMVK)* 에 몰려 있다. 92%다.
-- 나머지 여덟 표적, 설계 120개에서 나온 확정 결합체는 AMBP의 *1개* 다. 0.83%다.
+- IDI2와 PMVK를 빼면 남은 여덟 표적 설계 120개에서 나온 확정 결합체는 AMBP의 *1개*, 0.83%다. AMBP까지 빼면 일곱 표적 105개에서 *0개* 다.
 - 그리고 BoltzGen도 같은 모양이다. 5개 중 4개가 PMVK다.
 
 #crit[🤔 "저유사도 표적 10개에서 8.0%"라는 문장이 주는 인상과 실제 분포가 꽤 다르다. 두 표적은 양쪽 방법 모두에서 잘 풀렸고, 나머지 여덟 표적은 양쪽 모두 거의 아무것도 못 건졌다. BoltzPPI의 기여는 *이미 풀리는 표적에서 더 많이 건지는 쪽* 으로 나타났지 *안 풀리던 표적을 열어젖히는 쪽* 으로 나타나지 않았다. AMBP 하나가 그 예외인데 1/15이고, 게다가 AMBP는 2가 어세이 포맷이라(그림의 괄호 숫자) avidity가 끼어들 여지가 있는 자리다. 저유사도 벤치마크의 목적이 "새 표적으로의 일반화"였던 걸 생각하면, 표적 수준의 일반화는 2→3으로 한 칸 움직였다고 읽는 편이 정확하다.]
@@ -188,9 +192,9 @@ BoltzPPI는 비공개다. 그런데 리포트가 "Boltz-2의 단백질-리간드
 
 === 3.6 베낀 건 아닌가
 
-마지막 점검이 하나 더 있다. 회수된 설계가 이미 알려진 항체 서열을 그대로 가져온 건 아닌지, SAbDab \[7\]\(2026-05-27 스냅숏)과의 최소 편집 거리를 쟀다. 모든 설계가 CDR3 기준 최소 편집 거리 *4 이상* 이고, CDR1+2+3을 합치면 더 멀다.
+마지막 점검이 하나 더 있다. 회수된 설계가 이미 알려진 항체 서열을 그대로 가져온 건 아닌지, SAbDab \[7\]\(2026-05-27 스냅숏)과의 최소 편집 거리를 쟀다. 본문은 모든 설계가 CDR3 기준 *4 이상* 이고 CDR1+2+3을 합치면 더 멀다고 적는다. Figure 4는 표적별 분포를 바이올린으로 다 보여 주는데, CDR3 중앙값이 대체로 6에서 11 사이에 있고 위로는 15까지 간다.
 
-#crit-note[🤔 방향은 맞지만 "distant"라는 말이 조금 세다. CDR3는 보통 10–20잔기라 편집 거리 4면 70–80% 동일성이 남는다. 베끼지 않았다는 건 보여 주지만, 멀리 떨어졌다고 하기엔 애매한 거리다.]
+#crit-note[🤔 본문이 최솟값만 적은 건 아쉽다. CDR3가 보통 10–20잔기라 편집 거리 4면 60–80% 동일성이 남아서, 그 한 점만 보면 "distant"가 세게 들린다. 정작 Figure 4의 분포는 본문보다 설득력이 있는데, 중앙값 6–11이면 이야기가 다르다. 자기 그림이 더 좋은 말을 해 주는 자리다.]
 
 == 4. Conclusion
 
@@ -213,8 +217,9 @@ Boltz-2를 따로 한 편 쓰려고 한다. 이 글에서 코드로 짚은 `Affi
 + #link("https://doi.org/10.64898/2026.06.23.733997")[Uçar T, Bates J, Fu Y, Shi W, Stark H, Nava D, Cavalleri L, Wohlwend J, Corso G, Passaro S. _BoltzProt-1: Towards Efficient De Novo Binder Design with Good Developability._ bioRxiv (2026).]
 + #link("https://github.com/jwohlwend/boltz")[jwohlwend/boltz] (MIT), 커밋 `b1ebfc4` — Boltz-1 / Boltz-2 구현
 + #link("https://doi.org/10.1101/2025.11.20.689494")[Stark H 외. _BoltzGen: Toward Universal Binder Design._ bioRxiv (2025).] 코드: #link("https://github.com/HannesStark/boltzgen")[HannesStark/boltzgen] (MIT)
-+ #link("https://www.chaidiscovery.com/news/introducing-chai-2")[Chai Discovery. _Chai-2: zero-shot antibody design in a 24-well plate._ (2025).]
++ #link("https://doi.org/10.1101/2025.11.29.691346")[Chai Discovery 외. _Drug-like antibody design against challenging targets with atomic precision._ bioRxiv (2025).] 리포트가 "Chai-2"로 줄여 부르며 인용하는 논문이다.
 + #link("https://doi.org/10.1101/2024.11.19.624167")[Wohlwend J 외. _Boltz-1: Democratizing Biomolecular Interaction Modeling._ bioRxiv (2024).]
 + #link("https://doi.org/10.1038/s41586-023-06415-8")[Watson JL 외. _De novo design of protein structure and function with RFdiffusion._ Nature 620, 1089 (2023).]
 + #link("https://doi.org/10.1093/nar/gkt1043")[Dunbar J 외. _SAbDab: the structural antibody database._ Nucleic Acids Research 42, D1140 (2014).]
 + #link("https://doi.org/10.1093/nar/28.1.235")[Berman HM 외. _The Protein Data Bank._ Nucleic Acids Research 28, 235 (2000).]
++ #link("https://doi.org/10.1101/2025.06.14.659707")[Passaro S 외. _Boltz-2: Towards accurate and efficient binding affinity prediction._ bioRxiv (2025).]
