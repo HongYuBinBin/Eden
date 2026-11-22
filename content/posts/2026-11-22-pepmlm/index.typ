@@ -156,7 +156,7 @@ PepPrCLIP의 CLIP 모듈부터. 느슨한 조건의 "noisy" 데이터셋(학습 
 
 - PepPrCLIP은 hit rate *17.7%* 로 RFDiffusion의 *30.1%* 에 진다. ipTM $gt.eq$ 0.7인 비율도 *22%* 대 *40%* 로 밀린다. 타깃 209개 중 PepPrCLIP이 이긴 건 *33%* 다.
 - PepMLM은 *38% 초과* 로 RFDiffusion의 *30% 미만* 을 이긴다.
-- 두 논문 모두 정확한 값이 아니라 경계로 적은 부분이 있다. PepMLM은 "38%를 넘는다", "30% 미만"이라고만 쓴다.
+- 다만 PepMLM은 자기 수치를 정확한 값이 아니라 경계로만 적는다. "38%를 넘는다", "30% 미만"이다. PepPrCLIP은 소수점까지 적는다.
 
 PepPrCLIP 논문은 이 패배를 숨기지 않고 이유를 댄다. 테스트 타깃이 전부 PDB 구조라 RFDiffusion의 학습 데이터에 들어 있을 가능성이 높다는 것이다. 공정한 지적이다. 대신 속도를 내세운다. T4 한 장에서 분당 *1,000개* 를 생성하고 타깃당 *100,000개* 를 약 *1분* 에 줄 세우는 데 비해, RFDiffusion은 결합체 하나 설계에 약 *2분* 이 걸린다고 인용한다.
 
@@ -219,7 +219,7 @@ PepMLM 쪽은 범위가 넓은 대신 한 걸음 얕다. NCAM1 세포외 도메�
 
 === 3.7 논문 밖에서 숫자가 어떻게 변하나
 
-Duke 대학 보도자료는 PepPrCLIP이 RFDiffusion과 비교해 "거의 항상 더 잘 맞는 펩타이드를 만들었다"고 적는다. 논문의 수치는 hit rate *17.7%* 대 *30.1%*, 타깃의 *33%* 에서 승리다. 한편 두 논문 모두 결과를 정직하게 적은 편이고, 특히 PepPrCLIP은 베이스라인에 진 이유까지 설명한다.
+Duke 공과대학이 2025년 1월 27일에 낸 보도자료 \[13\]는 PepPrCLIP이 RFDiffusion보다 빨랐고 "거의 항상 더 잘 맞는"(almost always a better match) 펩타이드를 만들었다고 적는다. 논문의 수치는 hit rate *17.7%* 대 *30.1%*, 타깃의 *33%* 에서 승리다. 한편 두 논문 모두 결과를 정직하게 적은 편이고, 특히 PepPrCLIP은 베이스라인에 진 이유까지 설명한다.
 
 #crit[🤔 논문이 아니라 홍보 단계에서 숫자가 뒤집혔다. 33%와 "거의 항상"은 같은 결과를 가리킬 수 없다. 논문을 끝까지 읽어야만 확인할 수 있는 종류의 왜곡이라 더 성가시다. 그리고 이 왜곡은 한 방향으로만 일어난다. 논문이 솔직하게 적어 둔 패배가 보도자료에서 승리로 바뀌지, 그 반대는 일어나지 않는다.]
 
@@ -264,3 +264,4 @@ Duke 대학 보도자료는 PepPrCLIP이 RFDiffusion과 비교해 "거의 항상
 + #link("https://doi.org/10.1038/nbt.3988")[MMseqs2 enables sensitive protein sequence searching for the analysis of massive data sets] — Steinegger & Söding, Nature Biotechnology 35, 1026 (2017)
 + #link("https://huggingface.co/ubiquitx/pepprclip")[PepPrCLIP 코드·가중치 저장소] — UbiquiTx, HuggingFace (비상업·연구용 라이선스 동의 필요)
 + #link("https://doi.org/10.1038/s41592-022-01488-1")[ColabFold: making protein folding accessible to all] — Mirdita 외, Nature Methods 19, 679 (2022)
++ #link("https://pratt.duke.edu/news/harnessing-generative-ai-to-treat-undruggable-diseases/")[Harnessing Generative AI to Treat Undruggable Diseases] — Duke Pratt School of Engineering 보도자료, 2025-01-27
